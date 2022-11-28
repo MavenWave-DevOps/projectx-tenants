@@ -1,0 +1,26 @@
+apiVersion: projectx.mavenwave.dev/v1
+kind: Tenant
+metadata:
+  name: demo
+spec:
+  admins:
+  - apiGroup: ""
+    kind: User
+    name: foo@example.com
+  - apiGroup: ""
+    kind: "User"
+    name: biz@example.com
+  - apiGroup: ""
+    kind: ServiceAccount
+    name: default
+  viewers:
+  - apiGroup: ""
+    kind: User
+    name: bar@example.com
+  - apiGroup: ""
+    kind: User
+    name: baz@example.com
+  - apiGroup: ""
+    kind: ServiceAccount
+    name: default
+    namespace: default
