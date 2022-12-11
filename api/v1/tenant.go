@@ -3,6 +3,7 @@ package v1
 
 import (
 	v1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -19,19 +20,16 @@ type Tenant struct {
 }
 
 type TenantSpec struct {
-	Admins  []Binding `json:"admins,omitempty"`
-	Viewers []Binding `json:"viewers,omitempty"`
-}
-
-type Binding struct {
-	ApiGroup  string `json:"apiGroup"`
-	Kind      string `json:"kind"`
-	Name      string `json:"name"`
-	Namespace string `json:"namespace,omitempty"`
+	// Namespace admin users
+	Admins []rbacv1.Subject `json:"admins,omitempty"`
+	// Namespace viewer users
+	Viewers []rbacv1.Subject `json:"viewers,omitempty"`
 }
 
 type TenantStatus struct {
 	NamepaceConditions []v1.NamespaceCondition `json:"namespaceConditions,omitempty"`
-	Admins             []Binding               `json:"admins,omitempty"`
-	Viewers            []Binding               `json:"viewers,omitempty"`
+	// Namespace admin users
+	Admins []rbacv1.Subject `json:"admins,omitempty"`
+	// Namespace viewer users
+	Viewers []rbacv1.Subject `json:"viewers,omitempty"`
 }
