@@ -48,7 +48,7 @@ jobs:
     - name: Edit Image
       run: |
         cd manifests
-        kustomize edit set image tenant-controller=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref }}
+        kustomize edit set image tenant-controller=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
         kustomize build --output deploy.yaml
     - name: Create Release
       id: create_release
