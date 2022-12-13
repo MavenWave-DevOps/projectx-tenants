@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: tenant-controller
-        image: ghcr.io/mavenwave-devops/tenant-controller
+        image: tenant-controller
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
