@@ -1,0 +1,7 @@
+provider:
+  packages:
+  # - xpkg.upbound.io/crossplane-contrib/provider-argocd:v0.2.0
+  - ghcr.io/mavenwave-devops/provider-gcp:0.22.1
+  - ghcr.io/mavenwave-devops/upbound/provider-gcp:0.19.1
+  # - ghcr.io/mavenwave-devops/provider-helm:v0.12.1
+  # - ghcr.io/mavenwave-devops/provider-kubernetes:v0.5.1

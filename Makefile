@@ -25,6 +25,7 @@ create_cluster:
 local_dev: create_cluster
 	@echo "+ Setup dev environment"
 	@kubectl apply -k https://github.com/metacontroller/metacontroller/manifests/production
+	@helm -n crossplane-system upgrade -i crossplane crossplane --repo https://charts.crossplane.io/stable --version 1.10.1  --create-namespace --values development/crossplane/values.yaml
 
 install: generate_crds
 	@kubectl apply -k ${PWD}/manifests/
