@@ -46,9 +46,12 @@ jobs:
     - name: Install Kustomize
       run: curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
     - name: Edit Image
+      env:
+        OWNER: '${{ github.repository_owner }}'
       run: |
+        echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
         cd manifests
-        kustomize edit set image tenant-controller=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
+        kustomize edit set image tenant-controller=${{ env.REGISTRY }}/${{ env.OWNER_LC }}/tenant-controller:${{ github.ref_name }}
         kustomize build --output deploy.yaml
     - name: Create Release
       id: create_release
