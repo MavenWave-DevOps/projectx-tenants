@@ -24,15 +24,7 @@ create_cluster:
 
 local_dev: create_cluster
 	@echo "+ Setup dev environment"
-	@kubectl apply -k https://github.com/metacontroller/metacontroller/manifests/production
-
-install: generate_crds
-	@kubectl apply -k ${PWD}/manifests/
-
-run:
-	@docker build --rm -t tenant-controller .
-	@kind load docker-image tenant-controller:latest -n ${CLUSTER}
-	@kubectl -n metacontroller delete pod --selector=app=tenant-controller
+	@skaffold dev
 
 destroy:
 	@kind delete cluster --name ${CLUSTER}

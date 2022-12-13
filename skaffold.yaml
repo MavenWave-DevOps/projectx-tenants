@@ -1,0 +1,37 @@
+apiVersion: skaffold/v4beta1
+kind: Config
+metadata:
+  name: projectx-tenants
+build:
+  artifacts:
+  - image: tenant-controller
+    docker:
+      cacheFrom:
+      - ghcr.io/mavenwave-devops/tenant-controller
+  local: {}
+manifests:
+  kustomize:
+    paths:
+    - manifests
+profiles:
+- name: controller
+  manifests:
+    kustomize:
+      paths:
+      - manifests/controller
+- name: deployment
+  manifests:
+    kustomize:
+      paths:
+      - manifests/deployment
+- name: v1
+  manifests:
+    kustomize:
+      paths:
+      - manifests/v1
+deploy:
+  kubectl:
+    hooks:
+      before:
+      - host:
+          command: ["kubectl", "apply", "-k", "https://github.com/metacontroller/metacontroller/manifests/production"]

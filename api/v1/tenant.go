@@ -24,6 +24,14 @@ type TenantSpec struct {
 	Admins []rbacv1.Subject `json:"admins,omitempty"`
 	// Namespace viewer users
 	Viewers []rbacv1.Subject `json:"viewers,omitempty"`
+	Google  GoogleSpec       `json:"google,omitempty"`
+}
+
+type GoogleSpec struct {
+	// Create Google Cloud Provisioning resources
+	Enabled   bool   `json:"enabled,omitempty"`
+	ProjectId string `json:"projectId,omitempty"`
+	Role      string `json:"role,omitempty"`
 }
 
 type TenantStatus struct {

@@ -8,7 +8,7 @@ COPY go.sum .
 
 RUN go mod download
 
-COPY main.go .
+COPY . .
 
 RUN go build -o tenant-controller main.go
 
