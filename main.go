@@ -24,6 +24,22 @@ type SyncResponse struct {
 	Children []unstructured.Unstructured `json:"children"`
 }
 
+func getLabels(req *SyncRequest) map[string]string {
+	l := req.Parent.GetLabels()
+	if l != nil {
+		return l
+	}
+	return map[string]string{}
+}
+
+func getAnnotations(req *SyncRequest) map[string]string {
+	a := req.Parent.GetAnnotations()
+	if a != nil {
+		return a
+	}
+	return map[string]string{}
+}
+
 func createNs(req *SyncRequest) unstructured.Unstructured {
 	return unstructured.Unstructured{
 		Object: map[string]interface{}{
@@ -31,8 +47,8 @@ func createNs(req *SyncRequest) unstructured.Unstructured {
 			"kind":       "Namespace",
 			"metadata": map[string]interface{}{
 				"name":        req.Parent.GetName(),
-				"annotations": req.Parent.GetAnnotations(),
-				"labels":      req.Parent.GetLabels(),
+				"annotations": getAnnotations(req),
+				"labels":      getLabels(req),
 			},
 		},
 	}
