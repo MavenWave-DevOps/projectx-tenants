@@ -2,6 +2,10 @@ apiVersion: projectx.mavenwave.dev/v1
 kind: Tenant
 metadata:
   name: demo
+  labels:
+    foo: bar
+  annotations:
+    biz: baz
 spec:
   admins:
   - apiGroup: ""

@@ -30,7 +30,9 @@ func createNs(req *SyncRequest) unstructured.Unstructured {
 			"apiVersion": "v1",
 			"kind":       "Namespace",
 			"metadata": map[string]interface{}{
-				"name": req.Parent.GetName(),
+				"name":        req.Parent.GetName(),
+				"annotations": req.Parent.GetAnnotations(),
+				"labels":      req.Parent.GetLabels(),
 			},
 		},
 	}

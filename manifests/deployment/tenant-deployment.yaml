@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tenant-controller
-  namespace: metacontroller
 spec:
   replicas: 1
   selector:
@@ -15,8 +14,8 @@ spec:
         app: tenant-controller
     spec:
       containers:
-      - name: controller
-        image: tenant-controller:latest
+      - name: tenant-controller
+        image: ghcr.io/mavenwave-devops/tenant-controller
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
