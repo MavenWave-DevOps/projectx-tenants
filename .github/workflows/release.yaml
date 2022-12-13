@@ -45,11 +45,13 @@ jobs:
       uses: actions/checkout@v3
     - name: Install Kustomize
       run: curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
-    - name: Edit Image
-      env:
-        OWNER: '${{ github.repository_owner }}'
+    - name: set lower case owner name
       run: |
         echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+      env:
+        OWNER: '${{ github.repository_owner }}'
+    - name: Edit Image
+      run: |
         cd manifests
         kustomize edit set image tenant-controller=${{ env.REGISTRY }}/${{ env.OWNER_LC }}/tenant-controller:${{ github.ref_name }}
         kustomize build --output deploy.yaml
