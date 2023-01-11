@@ -25,4 +25,4 @@ spec:
   hooks:
     sync:
       webhook:
-        url: http://tenant-controller.metacontroller:8080/sync
+        url: http://tenant-controller.tenant-system:8080/sync
