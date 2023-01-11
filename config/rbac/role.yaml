@@ -1,0 +1,51 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespace
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - namespace/status
+  verbs:
+  - get
+- apiGroups:
+  - projectx.mavenwave.dev
+  resources:
+  - tenants
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - projectx.mavenwave.dev
+  resources:
+  - tenants/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - projectx.mavenwave.dev
+  resources:
+  - tenants/status
+  verbs:
+  - get
+  - patch
+  - update
