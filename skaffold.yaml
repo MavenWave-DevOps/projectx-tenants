@@ -35,3 +35,5 @@ deploy:
       before:
       - host:
           command: ["kubectl", "apply", "-k", "https://github.com/metacontroller/metacontroller/manifests/production"]
+      - host:
+          command: ["sh", "-c", "kubectl create ns tenant-system || true"]
