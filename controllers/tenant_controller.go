@@ -24,7 +24,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	projectxv1alpha1 "projectx.mavenwave.dev/api/v1alpha1"
@@ -44,15 +43,15 @@ type TenantReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=projectx.mavenwave.dev,resources=tenants,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=projectx.mavenwave.dev,resources=tenants/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=projectx.mavenwave.dev,resources=tenants/finalizers,verbs=update
-//+kubebuilder:rbac:groups="",resources=namespace,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups="",resources=namespace/status,verbs=get
-//+kubebuilder:rbac:groups=rbac.authorization.k8s.io/v1,resources=roles,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=rbac.authorization.k8s.io/v1,resources=roles/status,verbs=get
-//+kubebuilder:rbac:groups=rbac.authorization.k8s.io/v1,resources=rolebindings,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=rbac.authorization.k8s.io/v1,resources=rolebindings/status,verbs=get
+// +kubebuilder:rbac:groups=projectx.mavenwave.dev,resources=tenants,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=projectx.mavenwave.dev,resources=tenants/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=projectx.mavenwave.dev,resources=tenants/finalizers,verbs=update
+// +kubebuilder:rbac:groups="",resources=namespace,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups="",resources=namespace/status,verbs=get
+// +kubebuilder:rbac:groups=rbac.authorization.k8s.io/v1,resources=roles,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=rbac.authorization.k8s.io/v1,resources=roles/status,verbs=get
+// +kubebuilder:rbac:groups=rbac.authorization.k8s.io/v1,resources=rolebindings,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=rbac.authorization.k8s.io/v1,resources=rolebindings/status,verbs=get
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -80,11 +79,16 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		Client:      r.Client,
 		Scheme:      r.Scheme,
 	}
-	if _, err := namespace.Create(ctx, ns); err != nil {
+	foundNs, err := namespace.Create(ctx, ns)
+	if err != nil {
 		return ctrl.Result{}, err
 	}
+
+	tenant.Status.Namespace.Name = foundNs.Name
+	tenant.Status.Namespace.Status = string(foundNs.Status.Phase)
+
 	// Create admin role
-	adminRoleReq := &role.Role{
+	adminRole := &role.Role{
 		Name:      "admin",
 		Namespace: tenant.GetName(),
 		Rules: []rbacv1.PolicyRule{
@@ -99,15 +103,12 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		Scheme: r.Scheme,
 	}
 
-	adminRole, err := role.Create(ctx, adminRoleReq)
+	_, err = role.Create(ctx, adminRole)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
-	if err := controllerutil.SetControllerReference(&tenant, adminRole, r.Scheme); err != nil {
-		return ctrl.Result{}, err
-	}
 	// Create viewer role
-	viewerRoleReq := &role.Role{
+	viewerRole := &role.Role{
 		Name:      "viewer",
 		Namespace: tenant.GetName(),
 		Rules: []rbacv1.PolicyRule{
@@ -121,11 +122,8 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		Client: r.Client,
 		Scheme: r.Scheme,
 	}
-	viewerRole, err := role.Create(ctx, viewerRoleReq)
+	_, err = role.Create(ctx, viewerRole)
 	if err != nil {
-		return ctrl.Result{}, err
-	}
-	if err := controllerutil.SetControllerReference(&tenant, viewerRole, r.Scheme); err != nil {
 		return ctrl.Result{}, err
 	}
 
@@ -143,9 +141,12 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		Client:   r.Client,
 		Scheme:   r.Scheme,
 	}
-	if _, err := rolebinding.Create(ctx, adminRb); err != nil {
+	foundAdminRb, err := rolebinding.Create(ctx, adminRb)
+	if err != nil {
 		return ctrl.Result{}, err
 	}
+
+	tenant.Status.Admins = rolebinding.ListSubjectsStr(foundAdminRb.Subjects)
 
 	// Create viewer rolebinding
 	viewerRb := &rolebinding.Rolebinding{
@@ -161,8 +162,14 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		Client:   r.Client,
 		Scheme:   r.Scheme,
 	}
-	if _, err := rolebinding.Create(ctx, viewerRb); err != nil {
+	foundViewerRb, err := rolebinding.Create(ctx, viewerRb)
+	if err != nil {
 		return ctrl.Result{}, err
+	}
+	tenant.Status.Viewers = rolebinding.ListSubjectsStr(foundViewerRb.Subjects)
+
+	if err := r.Client.Status().Update(ctx, &tenant); err != nil {
+		log.Log.Info("failed to update tenant status")
 	}
 
 	return ctrl.Result{}, nil

@@ -2,6 +2,8 @@ package rolebinding
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -64,7 +66,19 @@ func Create(ctx context.Context, r *Rolebinding) (*rbacv1.RoleBinding, error) {
 			err = r.Client.Update(ctx, rb)
 		}
 	}
-	return rb, err
+	return foundRb, err
+}
+
+func ListSubjectsStr(s []rbacv1.Subject) string {
+	out := make([]string, len(s))
+	for i, v := range s {
+		if v.Kind == serviceAccount {
+			out[i] = fmt.Sprintf("%s/%s/%s", v.Kind, v.Namespace, v.Name)
+		} else {
+			out[i] = fmt.Sprintf("%s/%s", v.Kind, v.Name)
+		}
+	}
+	return strings.Join(out, ",")
 }
 
 func compareRoleRef(a, b rbacv1.RoleRef) bool {

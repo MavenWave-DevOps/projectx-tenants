@@ -45,5 +45,5 @@ func Create(ctx context.Context, ns *Namespace) (*v1.Namespace, error) {
 			err = ns.Client.Update(ctx, namespace)
 		}
 	}
-	return namespace, err
+	return foundNamespace, err
 }

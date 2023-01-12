@@ -44,7 +44,7 @@ func Create(ctx context.Context, r *Role) (*rbacv1.Role, error) {
 			err = r.Client.Update(ctx, role)
 		}
 	}
-	return role, err
+	return foundRole, err
 }
 
 func comparePolicies(a, b []rbacv1.PolicyRule) bool {

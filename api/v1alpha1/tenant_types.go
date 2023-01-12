@@ -38,9 +38,21 @@ type TenantSpec struct {
 type TenantStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	Namespace NamespaceStatus `json:"namespace"`
+	Admins    string          `json:"admins,omitempty"`
+	Viewers   string          `json:"viewers,omitempty"`
+}
+
+type NamespaceStatus struct {
+	Name   string `json:"name"`
+	Status string `json:"status"`
 }
 
 //+kubebuilder:object:root=true
+//+kubebuilder:printcolumn:JSONPath=".status.namespace.name",name="Namespace Name",type="string"
+//+kubebuilder:printcolumn:JSONPath=".status.namespace.status",name="Namespace Status",type="string"
+//+kubebuilder:printcolumn:JSONPath=".status.admins",name="Namespace Admins",type="string"
+//+kubebuilder:printcolumn:JSONPath=".status.viewers",name="Namespace Viewers",type="string"
 //+kubebuilder:subresource:status
 //+kubebuilder:resource:path=tenants,scope=Cluster
 

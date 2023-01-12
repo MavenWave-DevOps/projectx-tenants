@@ -15,7 +15,20 @@ spec:
     singular: tenant
   scope: Cluster
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .status.namespace.name
+      name: Namespace Name
+      type: string
+    - jsonPath: .status.namespace.status
+      name: Namespace Status
+      type: string
+    - jsonPath: .status.admins
+      name: Namespace Admins
+      type: string
+    - jsonPath: .status.viewers
+      name: Namespace Viewers
+      type: string
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         description: Tenant is the Schema for the tenants API
@@ -106,6 +119,26 @@ spec:
             type: object
           status:
             description: TenantStatus defines the observed state of Tenant
+            properties:
+              admins:
+                type: string
+              namespace:
+                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                  of cluster Important: Run "make" to regenerate code after modifying
+                  this file'
+                properties:
+                  name:
+                    type: string
+                  status:
+                    type: string
+                required:
+                - name
+                - status
+                type: object
+              viewers:
+                type: string
+            required:
+            - namespace
             type: object
         type: object
     served: true
