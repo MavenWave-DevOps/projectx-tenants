@@ -1,6 +1,7 @@
 
 # Image URL to use all building/pushing image targets
-IMG ?= controller:latest
+VERSION ?= latest
+IMG ?= ghcr.io/mavenwave-devops/tenant-controller:${VERSION}
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.25.0
 
@@ -165,3 +166,15 @@ $(CONTROLLER_GEN): $(LOCALBIN)
 envtest: $(ENVTEST) ## Download envtest-setup locally if necessary.
 $(ENVTEST): $(LOCALBIN)
 	test -s $(LOCALBIN)/setup-envtest || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
+
+##@ Release
+.PHONY: update_image
+update_image: ## Update image in kustomize manifest
+	cd manifests; \
+	kustomize edit set image controller=${IMG}; \
+	git add . ; \
+	git commit -m "update image to ${IMG}"
+
+.PHONY: release
+release: manifests generate update_image ## Create tag for new release
+	git tag ${VERSION}
