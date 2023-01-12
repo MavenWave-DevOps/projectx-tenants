@@ -29,17 +29,19 @@ jobs:
       uses: docker/metadata-action@v4
       with:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-    - name: Build Docker image
-      run: for i in ${{ steps.meta.outputs.tags }}; do IMG=$i make docker-build; done
-    - name: Push Docker image
-      run: for i in ${{ steps.meta.outputs.tags }}; do IMG=$i make docker-push; done
-    # - name: Build and push Docker image
-    #   uses: docker/build-push-action@v3
-    #   with:
-    #     context: .
-    #     push: true
-    #     tags: ${{ steps.meta.outputs.tags }}
-    #     labels: ${{ steps.meta.outputs.labels }}
+        tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
   # manifest:
   #   name: Create Deployment Manifest
   #   runs-on: ubuntu-latest
