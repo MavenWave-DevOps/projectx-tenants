@@ -30,13 +30,17 @@ jobs:
       uses: docker/metadata-action@v4
       with:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v3
-      with:
-        context: .
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+    - name: Build Docker image
+      run: for i in ${{ steps.meta.outputs.tags }}; do IMG=$i make docker-build; done
+    - name: Push Docker image
+      run: for i in ${{ steps.meta.outputs.tags }}; do IMG=$i make docker-push; done
+    # - name: Build and push Docker image
+    #   uses: docker/build-push-action@v3
+    #   with:
+    #     context: .
+    #     push: true
+    #     tags: ${{ steps.meta.outputs.tags }}
+    #     labels: ${{ steps.meta.outputs.labels }}
   manifest:
     name: Create Deployment Manifest
     runs-on: ubuntu-latest
@@ -50,11 +54,13 @@ jobs:
         echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
       env:
         OWNER: '${{ github.repository_owner }}'
+    - name: Make manifests
+      run: make manifests generate
     - name: Edit Image
       run: |
-        cd manifests
-        kustomize edit set image tenant-controller=${{ env.REGISTRY }}/${{ env.OWNER_LC }}/tenant-controller:${{ github.ref_name }}
+        kustomize edit set image controller=${{ env.REGISTRY }}/${{ env.OWNER_LC }}/tenant-controller:${{ github.ref_name }}
         kustomize build --output deploy.yaml
+      working-directory: manifests
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
