@@ -173,7 +173,7 @@ update_image: ## Update image in kustomize manifest
 	cd manifests; \
 	kustomize edit set image controller=${IMG}; \
 	git add . ; \
-	git commit -m "update image to ${IMG}"
+	git commit -m "update image to ${IMG}" || true
 
 .PHONY: release
 release: manifests generate update_image ## Create tag for new release
