@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -27,6 +28,10 @@ import (
 type TenantSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	// Assign subjects to the admin rbac role
+	Admins []rbacv1.Subject `json:"admins,omitempty"`
+	// Assign subjects to the viewer rbac role
+	Viewers []rbacv1.Subject `json:"viewers,omitempty"`
 }
 
 // TenantStatus defines the observed state of Tenant

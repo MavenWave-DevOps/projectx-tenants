@@ -11,4 +11,24 @@ metadata:
     foo: bar
   name: tenant-sample
 spec:
-  # TODO(user): Add fields here
+  admins:
+  - apiGroup: ""
+    kind: User
+    name: foo@example.com
+  - apiGroup: ""
+    kind: "User"
+    name: biz@example.com
+  - apiGroup: ""
+    kind: ServiceAccount
+    name: default
+  viewers:
+  - apiGroup: ""
+    kind: User
+    name: bar@example.com
+  - apiGroup: ""
+    kind: User
+    name: baz@example.com
+  - apiGroup: ""
+    kind: ServiceAccount
+    name: default
+    namespace: default

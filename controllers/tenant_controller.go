@@ -19,7 +19,6 @@ package controllers
 import (
 	"context"
 
-	v1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -30,13 +29,14 @@ import (
 
 	projectxv1alpha1 "projectx.mavenwave.dev/api/v1alpha1"
 	"projectx.mavenwave.dev/internal/namespace"
-	role "projectx.mavenwave.dev/internal/roles"
+	role "projectx.mavenwave.dev/internal/role"
+	"projectx.mavenwave.dev/internal/rolebinding"
 )
 
-var (
-	apiGVStr    = projectxv1alpha1.GroupVersion.String()
-	jobOwnerKey = ".tenant.controller"
-)
+// var (
+// 	apiGVStr    = projectxv1alpha1.GroupVersion.String()
+// 	jobOwnerKey = ".tenant.controller"
+// )
 
 // TenantReconciler reconciles a Tenant object
 type TenantReconciler struct {
@@ -49,6 +49,10 @@ type TenantReconciler struct {
 //+kubebuilder:rbac:groups=projectx.mavenwave.dev,resources=tenants/finalizers,verbs=update
 //+kubebuilder:rbac:groups="",resources=namespace,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups="",resources=namespace/status,verbs=get
+//+kubebuilder:rbac:groups=rbac.authorization.k8s.io/v1,resources=roles,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=rbac.authorization.k8s.io/v1,resources=roles/status,verbs=get
+//+kubebuilder:rbac:groups=rbac.authorization.k8s.io/v1,resources=rolebindings,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=rbac.authorization.k8s.io/v1,resources=rolebindings/status,verbs=get
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -64,7 +68,7 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 	var tenant projectxv1alpha1.Tenant
 	err := r.Get(ctx, req.NamespacedName, &tenant)
 	if err != nil && errors.IsNotFound(err) {
-		log.Log.Error(err, "unable to fetch Tenant")
+		log.Log.Info("unable to fetch Tenant", "error", err)
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 	// Create namespace
@@ -90,9 +94,12 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 				Verbs:     []string{"*"},
 			},
 		},
+		Owner:  &tenant,
+		Client: r.Client,
+		Scheme: r.Scheme,
 	}
 
-	adminRole, err := role.Create(ctx, r.Client, adminRoleReq)
+	adminRole, err := role.Create(ctx, adminRoleReq)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
@@ -110,12 +117,51 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 				Verbs:     []string{"get", "list", "watch"},
 			},
 		},
+		Owner:  &tenant,
+		Client: r.Client,
+		Scheme: r.Scheme,
 	}
-	viewerRole, err := role.Create(ctx, r.Client, viewerRoleReq)
+	viewerRole, err := role.Create(ctx, viewerRoleReq)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
 	if err := controllerutil.SetControllerReference(&tenant, viewerRole, r.Scheme); err != nil {
+		return ctrl.Result{}, err
+	}
+
+	// Create admin rolebinding
+	adminRb := &rolebinding.Rolebinding{
+		Name:      "admin-rb",
+		Namespace: tenant.Name,
+		RoleRef: rbacv1.RoleRef{
+			APIGroup: "rbac.authorization.k8s.io",
+			Kind:     "Role",
+			Name:     adminRole.Name,
+		},
+		Subjects: tenant.Spec.Admins,
+		Owner:    &tenant,
+		Client:   r.Client,
+		Scheme:   r.Scheme,
+	}
+	if _, err := rolebinding.Create(ctx, adminRb); err != nil {
+		return ctrl.Result{}, err
+	}
+
+	// Create viewer rolebinding
+	viewerRb := &rolebinding.Rolebinding{
+		Name:      "viewer-rb",
+		Namespace: tenant.Name,
+		RoleRef: rbacv1.RoleRef{
+			APIGroup: "rbac.authorization.k8s.io",
+			Kind:     "Role",
+			Name:     viewerRole.Name,
+		},
+		Subjects: tenant.Spec.Viewers,
+		Owner:    &tenant,
+		Client:   r.Client,
+		Scheme:   r.Scheme,
+	}
+	if _, err := rolebinding.Create(ctx, viewerRb); err != nil {
 		return ctrl.Result{}, err
 	}
 
@@ -143,7 +189,6 @@ func (r *TenantReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	// }
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&projectxv1alpha1.Tenant{}).
-		Owns(&v1.Namespace{}).
 		Owns(&rbacv1.Role{}).
 		Complete(r)
 }
