@@ -3,3 +3,7 @@ kind: Kustomization
 
 resources:
 - ../config/default
+images:
+- name: controller
+  newName: ghcr.io/mavenwave-devops/tenant-controller
+  newTag: latest
