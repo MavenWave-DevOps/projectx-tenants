@@ -19,6 +19,8 @@ package controllers
 import (
 	"context"
 
+	batchv1 "k8s.io/api/batch/v1"
+	v1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -27,6 +29,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	projectxv1alpha1 "projectx.mavenwave.dev/api/v1alpha1"
+	"projectx.mavenwave.dev/internal/gcp"
 	"projectx.mavenwave.dev/internal/namespace"
 	role "projectx.mavenwave.dev/internal/role"
 	"projectx.mavenwave.dev/internal/rolebinding"
@@ -70,11 +73,8 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		Name:        tenant.Name,
 		Labels:      tenant.Labels,
 		Annotations: tenant.Annotations,
-		Owner:       &tenant,
-		Client:      r.Client,
-		Scheme:      r.Scheme,
 	}
-	foundNs, err := namespace.Create(ctx, ns)
+	foundNs, err := ns.Create(ctx, r.Client, &tenant)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
@@ -93,12 +93,9 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 				Verbs:     []string{"*"},
 			},
 		},
-		Owner:  &tenant,
-		Client: r.Client,
-		Scheme: r.Scheme,
 	}
 
-	_, err = role.Create(ctx, adminRole)
+	_, err = adminRole.Create(ctx, r.Client, r.Scheme, &tenant)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
@@ -113,11 +110,8 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 				Verbs:     []string{"get", "list", "watch"},
 			},
 		},
-		Owner:  &tenant,
-		Client: r.Client,
-		Scheme: r.Scheme,
 	}
-	_, err = role.Create(ctx, viewerRole)
+	_, err = viewerRole.Create(ctx, r.Client, r.Scheme, &tenant)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
@@ -132,11 +126,8 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 			Name:     adminRole.Name,
 		},
 		Subjects: tenant.Spec.Admins,
-		Owner:    &tenant,
-		Client:   r.Client,
-		Scheme:   r.Scheme,
 	}
-	foundAdminRb, err := rolebinding.Create(ctx, adminRb)
+	foundAdminRb, err := adminRb.Create(ctx, r.Client, r.Scheme, &tenant)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
@@ -153,11 +144,8 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 			Name:     viewerRole.Name,
 		},
 		Subjects: tenant.Spec.Viewers,
-		Owner:    &tenant,
-		Client:   r.Client,
-		Scheme:   r.Scheme,
 	}
-	foundViewerRb, err := rolebinding.Create(ctx, viewerRb)
+	foundViewerRb, err := viewerRb.Create(ctx, r.Client, r.Scheme, &tenant)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
@@ -165,6 +153,12 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 
 	if err := r.Client.Status().Update(ctx, &tenant); err != nil {
 		log.Log.Info("failed to update tenant status")
+	}
+
+	if tenant.Spec.Infrastructure.GCP.Enabled {
+		if err := gcp.Create(ctx, r.Client, r.Scheme, &tenant); err != nil {
+			return ctrl.Result{}, err
+		}
 	}
 
 	return ctrl.Result{}, nil
@@ -192,5 +186,8 @@ func (r *TenantReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&projectxv1alpha1.Tenant{}).
 		Owns(&rbacv1.Role{}).
+		Owns(&rbacv1.RoleBinding{}).
+		Owns(&v1.ServiceAccount{}).
+		Owns(&batchv1.CronJob{}).
 		Complete(r)
 }

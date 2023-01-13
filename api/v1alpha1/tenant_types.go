@@ -31,7 +31,21 @@ type TenantSpec struct {
 	// Assign subjects to the admin rbac role
 	Admins []rbacv1.Subject `json:"admins,omitempty"`
 	// Assign subjects to the viewer rbac role
-	Viewers []rbacv1.Subject `json:"viewers,omitempty"`
+	Viewers        []rbacv1.Subject `json:"viewers,omitempty"`
+	Infrastructure InfraSpec        `json:"infrastructure,omitempty"`
+}
+
+type InfraSpec struct {
+	GCP GcpSpec `json:"gcp,omitempty"`
+}
+
+type GcpSpec struct {
+	// Enable Google Cloud authentication resources
+	Enabled bool `json:"enabled,omitempty"`
+	// GCP service account email address
+	ServiceAccount string `json:"serviceAccount"`
+	// Generate service account access token via cronjob
+	GenerateAccessToken bool `json:"generateAccessToken"`
 }
 
 // TenantStatus defines the observed state of Tenant

@@ -18,30 +18,26 @@ type Role struct {
 	Name      string
 	Namespace string
 	Rules     []rbacv1.PolicyRule
-	Owner     *projectxv1alpha1.Tenant
-	Client    client.Client
-	Scheme    *runtime.Scheme
 }
 
-func Create(ctx context.Context, r *Role) (*rbacv1.Role, error) {
+func (r *Role) Create(ctx context.Context, client client.Client, scheme *runtime.Scheme, owner *projectxv1alpha1.Tenant) (*rbacv1.Role, error) {
 	var err error
 	role := &rbacv1.Role{}
 	role.Name = r.Name
 	role.Namespace = r.Namespace
 	role.Rules = r.Rules
 	foundRole := &rbacv1.Role{}
-	if err := controllerutil.SetControllerReference(r.Owner, role, r.Scheme); err != nil {
+	if err := controllerutil.SetControllerReference(owner, role, scheme); err != nil {
 		return role, err
 	}
-	err = r.Client.Get(ctx, types.NamespacedName{Name: role.GetName(), Namespace: role.GetNamespace()}, foundRole)
+	err = client.Get(ctx, types.NamespacedName{Name: role.GetName(), Namespace: role.GetNamespace()}, foundRole)
 	if err != nil && errors.IsNotFound(err) {
-		log.Log.Info("creating role", "role", role.GetName())
-		err = r.Client.Create(ctx, role)
+		log.Log.Info("creating role", "tenant", owner.GetName(), "role", role.GetName())
+		err = client.Create(ctx, role)
 	} else if err == nil {
-		if ok := comparePolicies(foundRole.Rules, r.Rules); !ok {
-			role.Rules = r.Rules
-			log.Log.Info("updating role", "role", role.GetName())
-			err = r.Client.Update(ctx, role)
+		if role.String() != foundRole.String() {
+			log.Log.Info("updating role", "tenant", owner.GetName(), "role", role.GetName())
+			err = client.Update(ctx, role)
 		}
 	}
 	return foundRole, err
