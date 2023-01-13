@@ -169,7 +169,7 @@ $(ENVTEST): $(LOCALBIN)
 
 ##@ Release
 .PHONY: update_image
-update_image: ## Update image in kustomize manifest
+update_image: manifests generate ## Update image in kustomize manifest
 	cd manifests; \
 	kustomize edit set image controller=${IMG}; \
 	git add . ; \
