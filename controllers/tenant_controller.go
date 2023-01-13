@@ -48,10 +48,10 @@ type TenantReconciler struct {
 // +kubebuilder:rbac:groups=projectx.mavenwave.dev,resources=tenants/finalizers,verbs=update
 // +kubebuilder:rbac:groups="",resources=namespace,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups="",resources=namespace/status,verbs=get
-// +kubebuilder:rbac:groups=rbac.authorization.k8s.io/v1,resources=roles,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=rbac.authorization.k8s.io/v1,resources=roles/status,verbs=get
-// +kubebuilder:rbac:groups=rbac.authorization.k8s.io/v1,resources=rolebindings,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=rbac.authorization.k8s.io/v1,resources=rolebindings/status,verbs=get
+// +kubebuilder:rbac:groups=rbac.authorization.k8s.io,resources=roles,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=rbac.authorization.k8s.io,resources=roles/status,verbs=get
+// +kubebuilder:rbac:groups=rbac.authorization.k8s.io,resources=rolebindings,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=rbac.authorization.k8s.io,resources=rolebindings/status,verbs=get
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
