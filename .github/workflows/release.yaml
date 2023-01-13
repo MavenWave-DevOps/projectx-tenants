@@ -32,8 +32,8 @@ jobs:
         tags: |
             type=ref,event=branch
             type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern=v{{version}}
+            type=semver,pattern=v{{major}}.{{minor}}
             type=sha
     - name: build and push Docker image
       uses: docker/build-push-action@v3
