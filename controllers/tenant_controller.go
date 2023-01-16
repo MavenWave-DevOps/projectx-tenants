@@ -159,6 +159,10 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		if err := gcp.Create(ctx, r.Client, r.Scheme, &tenant); err != nil {
 			return ctrl.Result{}, err
 		}
+	} else {
+		if err := gcp.Delete(ctx, r.Client, &tenant); err != nil {
+			return ctrl.Result{}, err
+		}
 	}
 
 	return ctrl.Result{}, nil

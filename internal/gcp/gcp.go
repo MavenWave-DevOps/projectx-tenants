@@ -15,9 +15,15 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+const (
+	saName      = "gcp-auth"
+	rbName      = "gcp-auth-rb"
+	cronjobName = "gcp-credential-sync"
+)
+
 func Create(ctx context.Context, client client.Client, scheme *runtime.Scheme, owner *projectxv1alpha1.Tenant) error {
 	sa := serviceaccount.ServiceAccount{
-		Name:      "gcp-auth",
+		Name:      saName,
 		Namespace: owner.Name,
 		Annotations: map[string]string{
 			"iam.gke.io/gcp-service-account": owner.Spec.Infrastructure.GCP.ServiceAccount,
@@ -27,7 +33,7 @@ func Create(ctx context.Context, client client.Client, scheme *runtime.Scheme, o
 		return err
 	}
 	role := role.Role{
-		Name:      "gcp-auth",
+		Name:      saName,
 		Namespace: owner.Name,
 		Rules: []rbacv1.PolicyRule{
 			{
@@ -41,7 +47,7 @@ func Create(ctx context.Context, client client.Client, scheme *runtime.Scheme, o
 		return err
 	}
 	rb := rolebinding.Rolebinding{
-		Name:      "gcp-auth",
+		Name:      rbName,
 		Namespace: owner.Name,
 		RoleRef: rbacv1.RoleRef{
 			APIGroup: "rbac.authorization.k8s.io",
@@ -60,7 +66,7 @@ func Create(ctx context.Context, client client.Client, scheme *runtime.Scheme, o
 		return err
 	}
 	cronjob := cronjob.CronJob{
-		Name:                       "gcp-credential-sync",
+		Name:                       cronjobName,
 		Namespace:                  owner.Name,
 		Schedule:                   "*/45 * * * *",
 		FailedJobsHistoryLimit:     1,
@@ -111,6 +117,38 @@ func Create(ctx context.Context, client client.Client, scheme *runtime.Scheme, o
 		},
 	}
 	if _, err := cronjob.Create(ctx, client, scheme, owner); err != nil {
+		return err
+	}
+	return nil
+}
+
+func Delete(ctx context.Context, client client.Client, owner *projectxv1alpha1.Tenant) error {
+	sa := serviceaccount.ServiceAccount{
+		Name:      saName,
+		Namespace: owner.Name,
+	}
+	if err := sa.Delete(ctx, client, owner); err != nil {
+		return err
+	}
+	role := role.Role{
+		Name:      saName,
+		Namespace: owner.Name,
+	}
+	if err := role.Delete(ctx, client, owner); err != nil {
+		return err
+	}
+	rb := rolebinding.Rolebinding{
+		Name:      saName,
+		Namespace: owner.Name,
+	}
+	if err := rb.Delete(ctx, client, owner); err != nil {
+		return err
+	}
+	cronjob := cronjob.CronJob{
+		Name:      cronjobName,
+		Namespace: owner.Name,
+	}
+	if err := cronjob.Delete(ctx, client, owner); err != nil {
 		return err
 	}
 	return nil

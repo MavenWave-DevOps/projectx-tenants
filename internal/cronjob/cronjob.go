@@ -61,6 +61,20 @@ func (c *CronJob) Create(ctx context.Context, client client.Client, scheme *runt
 	return foundCronjob, err
 }
 
+func (c *CronJob) Delete(ctx context.Context, client client.Client, owner *projectxv1alpha1.Tenant) error {
+	cronjob := &batchv1.CronJob{}
+	cronjob.Name = c.Name
+	cronjob.Namespace = c.Namespace
+	foundCronjob := &batchv1.CronJob{}
+	if err := client.Get(ctx, types.NamespacedName{Name: cronjob.GetName(), Namespace: cronjob.GetNamespace()}, foundCronjob); err == nil {
+		log.Log.Info("deleting cronjob", "tenant", owner.GetName(), "cronjob", cronjob.GetName())
+		if err := client.Delete(ctx, foundCronjob); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func int32Ptr(i int32) *int32 {
 	return &i
 }

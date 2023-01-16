@@ -57,6 +57,20 @@ func (r *Rolebinding) Create(ctx context.Context, client client.Client, scheme *
 	return foundRb, err
 }
 
+func (r *Rolebinding) Delete(ctx context.Context, client client.Client, owner *projectxv1alpha1.Tenant) error {
+	rb := &rbacv1.RoleBinding{}
+	rb.Name = r.Name
+	rb.Namespace = r.Namespace
+	foundRb := &rbacv1.RoleBinding{}
+	if err := client.Get(ctx, types.NamespacedName{Name: rb.GetName(), Namespace: rb.GetNamespace()}, foundRb); err == nil {
+		log.Log.Info("deleting rolebinding", "tenant", owner.GetName(), "rolebinding", rb.GetName())
+		if err := client.Delete(ctx, foundRb); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func ListSubjectsStr(s []rbacv1.Subject) string {
 	out := make([]string, len(s))
 	for i, v := range s {

@@ -43,3 +43,17 @@ func (s *ServiceAccount) Create(ctx context.Context, client client.Client, schem
 	}
 	return foundSa, err
 }
+
+func (s *ServiceAccount) Delete(ctx context.Context, client client.Client, owner *projectxv1alpha1.Tenant) error {
+	sa := &v1.ServiceAccount{}
+	sa.Name = s.Name
+	sa.Namespace = s.Namespace
+	foundSa := &v1.ServiceAccount{}
+	if err := client.Get(ctx, types.NamespacedName{Name: sa.GetName(), Namespace: sa.GetNamespace()}, foundSa); err == nil {
+		log.Log.Info("deleting serviceaccount", "tenant", owner.GetName(), "serviceaccount", sa.GetName())
+		if err := client.Delete(ctx, foundSa); err != nil {
+			return err
+		}
+	}
+	return nil
+}

@@ -43,6 +43,20 @@ func (r *Role) Create(ctx context.Context, client client.Client, scheme *runtime
 	return foundRole, err
 }
 
+func (r *Role) Delete(ctx context.Context, client client.Client, owner *projectxv1alpha1.Tenant) error {
+	role := &rbacv1.Role{}
+	role.Name = r.Name
+	role.Namespace = r.Namespace
+	foundRole := &rbacv1.Role{}
+	if err := client.Get(ctx, types.NamespacedName{Name: role.GetName(), Namespace: role.GetNamespace()}, foundRole); err == nil {
+		log.Log.Info("deleting role", "tenant", owner.GetName(), "role", role.GetName())
+		if err := client.Delete(ctx, foundRole); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func comparePolicies(a, b []rbacv1.PolicyRule) bool {
 	for _, v := range a {
 		for _, x := range b {
