@@ -32,3 +32,8 @@ spec:
     kind: ServiceAccount
     name: default
     namespace: default
+  infrastructure:
+    gcp:
+      enabled: true
+      serviceAccount: nextgen-devops@bradw-nextgen-devops.iam.gserviceaccount.com
+    #   generateAccessToken: false

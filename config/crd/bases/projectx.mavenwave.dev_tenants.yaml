@@ -83,6 +83,23 @@ spec:
                   type: object
                   x-kubernetes-map-type: atomic
                 type: array
+              infrastructure:
+                properties:
+                  gcp:
+                    properties:
+                      enabled:
+                        description: Enable Google Cloud authentication resources
+                        type: boolean
+                      generateAccessToken:
+                        description: Generate service account access token via cronjob
+                        type: boolean
+                      serviceAccount:
+                        description: GCP service account email address
+                        type: string
+                    required:
+                    - serviceAccount
+                    type: object
+                type: object
               viewers:
                 description: Assign subjects to the viewer rbac role
                 items:
