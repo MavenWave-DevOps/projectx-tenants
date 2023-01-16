@@ -97,7 +97,6 @@ spec:
                         description: GCP service account email address
                         type: string
                     required:
-                    - generateAccessToken
                     - serviceAccount
                     type: object
                 type: object

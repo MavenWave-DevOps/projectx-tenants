@@ -45,7 +45,7 @@ type GcpSpec struct {
 	// GCP service account email address
 	ServiceAccount string `json:"serviceAccount"`
 	// Generate service account access token via cronjob
-	GenerateAccessToken bool `json:"generateAccessToken"`
+	GenerateAccessToken bool `json:"generateAccessToken,omitempty"`
 }
 
 // TenantStatus defines the observed state of Tenant

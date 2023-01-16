@@ -34,6 +34,6 @@ spec:
     namespace: default
   infrastructure:
     gcp:
-      enabled: false
+      enabled: true
       serviceAccount: nextgen-devops@bradw-nextgen-devops.iam.gserviceaccount.com
-      generateAccessToken: false
+    #   generateAccessToken: false
