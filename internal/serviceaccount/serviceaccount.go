@@ -25,8 +25,8 @@ func (s *ServiceAccount) Create(ctx context.Context, client client.Client, schem
 	sa := &v1.ServiceAccount{}
 	sa.Name = s.Name
 	sa.Namespace = s.Namespace
-	sa.Labels = s.Labels
-	sa.Annotations = s.Annotations
+	sa.SetAnnotations(owner.Annotations)
+	sa.SetLabels(owner.Labels)
 	foundSa := &v1.ServiceAccount{}
 	if err := controllerutil.SetControllerReference(owner, sa, scheme); err != nil {
 		return sa, err

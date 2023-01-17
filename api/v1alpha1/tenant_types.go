@@ -28,11 +28,21 @@ import (
 type TenantSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	// Namespace labels and annotations
+	Namespace NamespaceSpec `json:"namespace,omitempty"`
 	// Assign subjects to the admin rbac role
 	Admins []rbacv1.Subject `json:"admins,omitempty"`
 	// Assign subjects to the viewer rbac role
 	Viewers        []rbacv1.Subject `json:"viewers,omitempty"`
 	Infrastructure InfraSpec        `json:"infrastructure,omitempty"`
+}
+
+type NamespaceSpec struct {
+	// Annotaions
+	Annotations map[string]string `json:"annotations,omitempty"`
+	// Labels
+	Labels map[string]string `json:"labels,omitempty"`
 }
 
 type InfraSpec struct {

@@ -71,8 +71,8 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 	// Create namespace
 	ns := &namespace.Namespace{
 		Name:        tenant.Name,
-		Labels:      tenant.Labels,
-		Annotations: tenant.Annotations,
+		Annotations: tenant.Spec.Namespace.Annotations,
+		Labels:      tenant.Spec.Namespace.Labels,
 	}
 	foundNs, err := ns.Create(ctx, r.Client, &tenant)
 	if err != nil {

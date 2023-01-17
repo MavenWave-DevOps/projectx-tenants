@@ -11,6 +11,11 @@ metadata:
     foo: bar
   name: tenant-sample
 spec:
+  namespace:
+    annotations:
+      biz: baz
+    labels:
+      foo: fiz
   admins:
   - apiGroup: ""
     kind: User

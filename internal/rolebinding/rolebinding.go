@@ -31,6 +31,8 @@ func (r *Rolebinding) Create(ctx context.Context, client client.Client, scheme *
 	rb := &rbacv1.RoleBinding{}
 	rb.Name = r.Name
 	rb.Namespace = r.Namespace
+	rb.SetAnnotations(owner.Annotations)
+	rb.SetLabels(owner.Labels)
 	rb.RoleRef = r.RoleRef
 	rb.Subjects = r.Subjects
 	for i, v := range rb.Subjects {

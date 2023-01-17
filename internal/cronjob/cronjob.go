@@ -34,6 +34,8 @@ func (c *CronJob) Create(ctx context.Context, client client.Client, scheme *runt
 	cronjob := &batchv1.CronJob{}
 	cronjob.Name = c.Name
 	cronjob.Namespace = c.Namespace
+	cronjob.SetAnnotations(owner.Annotations)
+	cronjob.SetLabels(owner.Labels)
 	cronjob.Spec.Schedule = c.Schedule
 	cronjob.Spec.FailedJobsHistoryLimit = int32Ptr(c.FailedJobsHistoryLimit)
 	cronjob.Spec.SuccessfulJobsHistoryLimit = int32Ptr(c.SuccessfulJobsHistoryLimit)
