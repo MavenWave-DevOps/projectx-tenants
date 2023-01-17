@@ -49,9 +49,7 @@ spec:
             description: TenantSpec defines the desired state of Tenant
             properties:
               admins:
-                description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-                  Important: Run "make" to regenerate code after modifying this file
-                  Assign subjects to the admin rbac role'
+                description: Assign subjects to the admin rbac role
                 items:
                   description: Subject contains a reference to the object or user
                     identities a role binding applies to.  This can either hold a
@@ -98,6 +96,20 @@ spec:
                         type: string
                     required:
                     - serviceAccount
+                    type: object
+                type: object
+              namespace:
+                description: Namespace labels and annotations
+                properties:
+                  annotations:
+                    additionalProperties:
+                      type: string
+                    description: Annotaions
+                    type: object
+                  labels:
+                    additionalProperties:
+                      type: string
+                    description: Labels
                     type: object
                 type: object
               viewers:

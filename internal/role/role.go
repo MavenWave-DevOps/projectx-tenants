@@ -25,6 +25,8 @@ func (r *Role) Create(ctx context.Context, client client.Client, scheme *runtime
 	role := &rbacv1.Role{}
 	role.Name = r.Name
 	role.Namespace = r.Namespace
+	role.SetAnnotations(owner.Annotations)
+	role.SetLabels(owner.Labels)
 	role.Rules = r.Rules
 	foundRole := &rbacv1.Role{}
 	if err := controllerutil.SetControllerReference(owner, role, scheme); err != nil {
