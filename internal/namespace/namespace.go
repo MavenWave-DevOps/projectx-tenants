@@ -17,16 +17,30 @@ type Namespace struct {
 	Labels      map[string]string
 }
 
+func (ns *Namespace) SetAnnotations(annotations map[string]string) {
+	if len(ns.Annotations) == 0 {
+		ns.Annotations = make(map[string]string)
+	}
+	for k, v := range annotations {
+		ns.Annotations[k] = v
+	}
+}
+
+func (ns *Namespace) SetLabels(labels map[string]string) {
+	if len(ns.Labels) == 0 {
+		ns.Labels = make(map[string]string)
+	}
+	for k, v := range labels {
+		ns.Labels[k] = v
+	}
+}
+
 func (ns *Namespace) Create(ctx context.Context, client client.Client, owner *projectxv1alpha1.Tenant) (*v1.Namespace, error) {
 	namespace := &v1.Namespace{}
 	namespace.Name = ns.Name
-	for k, v := range owner.Annotations {
-		ns.Annotations[k] = v
-	}
+	ns.SetAnnotations(owner.Annotations)
 	namespace.SetAnnotations(ns.Annotations)
-	for k, v := range owner.Labels {
-		ns.Labels[k] = v
-	}
+	ns.SetLabels(owner.Labels)
 	namespace.SetLabels(ns.Labels)
 	foundNamespace := &v1.Namespace{}
 	err := client.Get(ctx, types.NamespacedName{Name: namespace.GetName()}, foundNamespace)
