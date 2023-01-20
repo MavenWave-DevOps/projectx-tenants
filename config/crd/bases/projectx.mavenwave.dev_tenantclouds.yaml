@@ -1,0 +1,90 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.10.0
+  creationTimestamp: null
+  name: tenantclouds.projectx.mavenwave.dev
+spec:
+  group: projectx.mavenwave.dev
+  names:
+    kind: TenantCloud
+    listKind: TenantCloudList
+    plural: tenantclouds
+    singular: tenantcloud
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.serviceAccount.name
+      name: ServiceAccount Name
+      type: string
+    - jsonPath: .status.serviceAccount.namespace
+      name: ServiceAccount Namespace
+      type: string
+    - jsonPath: .status.serviceAccount.gcpServiceAccount
+      name: GCP ServiceAccount
+      type: string
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: TenantCloud is the Schema for the tenantclouds API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: TenantCloudSpec defines the desired state of TenantCloud
+            properties:
+              gcp:
+                description: Configure GCP credentials
+                properties:
+                  enabled:
+                    description: Enable Google Cloud authentication resources
+                    type: boolean
+                  generateAccessToken:
+                    description: Generate service account access token via cronjob
+                    type: boolean
+                  serviceAccount:
+                    description: GCP service account email address
+                    type: string
+                required:
+                - serviceAccount
+                type: object
+            type: object
+          status:
+            description: TenantCloudStatus defines the observed state of TenantCloud
+            properties:
+              serviceAccount:
+                description: Service account
+                properties:
+                  gcpServiceAccount:
+                    description: GCP service account
+                    type: string
+                  name:
+                    description: Service account name
+                    type: string
+                  namespace:
+                    description: Service account namespace
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+            required:
+            - serviceAccount
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
