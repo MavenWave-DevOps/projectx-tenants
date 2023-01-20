@@ -124,9 +124,8 @@ func (r *TenantCloudReconciler) SetupGcp(ctx context.Context, req ctrl.Request, 
 			}
 		}
 	}
-	// tenant.Status.ServiceAccount.Name = foundSa.Name
-	// tenant.Status.ServiceAccount.Namespace = foundSa.Namespace
-	// tenant.Status.ServiceAccount.GcpServicAccount = foundSa.Annotations["iam.gke.io/gcp-service-account"]
+	tenant.Status.ServiceAccount = fmt.Sprintf("%s/%s", foundSa.Namespace, foundSa.Name)
+	tenant.Status.GcpServicAccount = foundSa.Annotations["iam.gke.io/gcp-service-account"]
 	// Create role
 	role := &rbacv1.Role{}
 	role.Name = tenant.Name
@@ -196,6 +195,7 @@ func (r *TenantCloudReconciler) SetupGcp(ctx context.Context, req ctrl.Request, 
 		}
 	}
 	// Create cronjob
+	secretName := fmt.Sprintf("%s-gcp-credentials", tenant.Name)
 	cronjob := &batchv1.CronJob{}
 	cronjob.Name = tenant.Name
 	cronjob.Namespace = tenant.Namespace
@@ -228,7 +228,7 @@ func (r *TenantCloudReconciler) SetupGcp(ctx context.Context, req ctrl.Request, 
 			Env: []v1.EnvVar{
 				{
 					Name:  "SECRET_NAME",
-					Value: fmt.Sprintf("%s-gcp-credentials", tenant.Name),
+					Value: secretName,
 				},
 				{
 					Name:  "SECRET_KEY",
@@ -266,6 +266,7 @@ func (r *TenantCloudReconciler) SetupGcp(ctx context.Context, req ctrl.Request, 
 			}
 		}
 	}
+	tenant.Status.Secret = fmt.Sprintf("%s/%s", tenant.Namespace, secretName)
 	return nil
 }
 

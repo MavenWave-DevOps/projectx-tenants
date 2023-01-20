@@ -47,22 +47,17 @@ type TenantCloudStatus struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Service account
-	ServiceAccount ServiceAccountSpec `json:"serviceAccount"`
-}
-
-type ServiceAccountSpec struct {
-	// Service account name
-	Name string `json:"name"`
-	// Service account namespace
-	Namespace string `json:"namespace"`
+	ServiceAccount string `json:"serviceAccount,omitempty"`
 	// GCP service account
 	GcpServicAccount string `json:"gcpServiceAccount,omitempty"`
+	// Kubernetes secret
+	Secret string `json:"secret,omitempty"`
 }
 
 //+kubebuilder:object:root=true
-//+kubebuilder:printcolumn:JSONPath=".status.serviceAccount.name",name="ServiceAccount Name",type="string"
-//+kubebuilder:printcolumn:JSONPath=".status.serviceAccount.namespace",name="ServiceAccount Namespace",type="string"
-//+kubebuilder:printcolumn:JSONPath=".status.serviceAccount.gcpServiceAccount",name="GCP ServiceAccount",type="string"
+//+kubebuilder:printcolumn:JSONPath=".status.serviceAccount",name="ServiceAccount",type="string"
+//+kubebuilder:printcolumn:JSONPath=".status.gcpServiceAccount",name="GCP ServiceAccount",type="string"
+//+kubebuilder:printcolumn:JSONPath=".status.secret",name="Secret",type="string"
 //+kubebuilder:subresource:status
 
 // TenantCloud is the Schema for the tenantclouds API

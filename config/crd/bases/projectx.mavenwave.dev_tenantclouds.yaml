@@ -16,14 +16,14 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .status.serviceAccount.name
-      name: ServiceAccount Name
+    - jsonPath: .status.serviceAccount
+      name: ServiceAccount
       type: string
-    - jsonPath: .status.serviceAccount.namespace
-      name: ServiceAccount Namespace
-      type: string
-    - jsonPath: .status.serviceAccount.gcpServiceAccount
+    - jsonPath: .status.gcpServiceAccount
       name: GCP ServiceAccount
+      type: string
+    - jsonPath: .status.secret
+      name: Secret
       type: string
     name: v1alpha1
     schema:
@@ -64,24 +64,15 @@ spec:
           status:
             description: TenantCloudStatus defines the observed state of TenantCloud
             properties:
+              gcpServiceAccount:
+                description: GCP service account
+                type: string
+              secret:
+                description: Kubernetes secret
+                type: string
               serviceAccount:
                 description: Service account
-                properties:
-                  gcpServiceAccount:
-                    description: GCP service account
-                    type: string
-                  name:
-                    description: Service account name
-                    type: string
-                  namespace:
-                    description: Service account namespace
-                    type: string
-                required:
-                - name
-                - namespace
-                type: object
-            required:
-            - serviceAccount
+                type: string
             type: object
         type: object
     served: true
