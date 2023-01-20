@@ -89,11 +89,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controllers.TenantReconciler{
+	// if err = (&controllers.TenantReconciler{
+	// 	Client: mgr.GetClient(),
+	// 	Scheme: mgr.GetScheme(),
+	// }).SetupWithManager(mgr); err != nil {
+	// 	setupLog.Error(err, "unable to create controller", "controller", "Tenant")
+	// 	os.Exit(1)
+	// }
+	if err = (&controllers.TenantCloudReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "Tenant")
+		setupLog.Error(err, "unable to create controller", "controller", "TenantCloud")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder

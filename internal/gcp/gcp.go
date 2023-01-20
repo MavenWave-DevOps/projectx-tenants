@@ -25,9 +25,9 @@ func Create(ctx context.Context, client client.Client, scheme *runtime.Scheme, o
 	sa := serviceaccount.ServiceAccount{
 		Name:      saName,
 		Namespace: owner.Name,
-		Annotations: map[string]string{
-			"iam.gke.io/gcp-service-account": owner.Spec.Infrastructure.GCP.ServiceAccount,
-		},
+		// Annotations: map[string]string{
+		// 	"iam.gke.io/gcp-service-account": owner.Spec.GCP.ServiceAccount,
+		// },
 	}
 	if _, err := sa.Create(ctx, client, scheme, owner); err != nil {
 		return err
@@ -74,9 +74,9 @@ func Create(ctx context.Context, client client.Client, scheme *runtime.Scheme, o
 		ConcurrencyPolicy:          "Forbid",
 		StartingDeadlineSeconds:    1800,
 		ActiveDeadlineSeconds:      600,
-		Suspend:                    !owner.Spec.Infrastructure.GCP.GenerateAccessToken,
-		ServiceAccountName:         sa.Name,
-		RestartPolicy:              "Never",
+		// Suspend:                    !owner.Spec.Infrastructure.GCP.GenerateAccessToken,
+		ServiceAccountName: sa.Name,
+		RestartPolicy:      "Never",
 		Containers: []v1.Container{
 			{
 				Name:            "create-access-token",

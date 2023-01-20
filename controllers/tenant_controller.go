@@ -29,7 +29,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	projectxv1alpha1 "projectx.mavenwave.dev/api/v1alpha1"
-	"projectx.mavenwave.dev/internal/gcp"
 	"projectx.mavenwave.dev/internal/namespace"
 	role "projectx.mavenwave.dev/internal/role"
 	"projectx.mavenwave.dev/internal/rolebinding"
@@ -49,7 +48,6 @@ type TenantReconciler struct {
 // +kubebuilder:rbac:groups=projectx.mavenwave.dev,resources=tenants,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=projectx.mavenwave.dev,resources=tenants/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=projectx.mavenwave.dev,resources=tenants/finalizers,verbs=update
-// +kubebuilder:rbac:groups="*",resources=*,verbs=*
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -155,15 +153,15 @@ func (r *TenantReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		log.Log.Info("failed to update tenant status")
 	}
 
-	if tenant.Spec.Infrastructure.GCP.Enabled {
-		if err := gcp.Create(ctx, r.Client, r.Scheme, &tenant); err != nil {
-			return ctrl.Result{}, err
-		}
-	} else {
-		if err := gcp.Delete(ctx, r.Client, &tenant); err != nil {
-			return ctrl.Result{}, err
-		}
-	}
+	// if tenant.Spec.Infrastructure.GCP.Enabled {
+	// 	if err := gcp.Create(ctx, r.Client, r.Scheme, &tenant); err != nil {
+	// 		return ctrl.Result{}, err
+	// 	}
+	// } else {
+	// 	if err := gcp.Delete(ctx, r.Client, &tenant); err != nil {
+	// 		return ctrl.Result{}, err
+	// 	}
+	// }
 
 	return ctrl.Result{}, nil
 }

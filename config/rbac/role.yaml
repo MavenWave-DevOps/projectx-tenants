@@ -6,11 +6,75 @@ metadata:
   name: manager-role
 rules:
 - apiGroups:
-  - '*'
+  - ""
   resources:
-  - '*'
+  - secrets
   verbs:
-  - '*'
+  - create
+  - get
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - serviceaccounts
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - serviceaccounts/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - batch
+  resources:
+  - cronjobs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - cronjobs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - projectx.mavenwave.dev
+  resources:
+  - tenantclouds
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - projectx.mavenwave.dev
+  resources:
+  - tenantclouds/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - projectx.mavenwave.dev
+  resources:
+  - tenantclouds/status
+  verbs:
+  - get
+  - patch
+  - update
 - apiGroups:
   - projectx.mavenwave.dev
   resources:
@@ -36,4 +100,40 @@ rules:
   verbs:
   - get
   - patch
+  - update
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - rolebindings
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - rolebindings/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - roles
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - roles/finalizers
+  verbs:
   - update

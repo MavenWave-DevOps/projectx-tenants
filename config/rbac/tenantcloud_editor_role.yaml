@@ -1,0 +1,31 @@
+# permissions for end users to edit tenantclouds.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: tenantcloud-editor-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: projectx-tenants
+    app.kubernetes.io/part-of: projectx-tenants
+    app.kubernetes.io/managed-by: kustomize
+  name: tenantcloud-editor-role
+rules:
+- apiGroups:
+  - projectx.mavenwave.dev
+  resources:
+  - tenantclouds
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - projectx.mavenwave.dev
+  resources:
+  - tenantclouds/status
+  verbs:
+  - get
