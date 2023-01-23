@@ -3,6 +3,7 @@
 # It should be run by config/default
 resources:
 - bases/projectx.mavenwave.dev_tenantclouds.yaml
+- bases/projectx.mavenwave.dev_tenants.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 
 patchesStrategicMerge:

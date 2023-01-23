@@ -103,8 +103,14 @@ func (r *TenantCloudReconciler) SetupGcp(ctx context.Context, req ctrl.Request, 
 	sa := &v1.ServiceAccount{}
 	sa.Name = tenant.Name
 	sa.Namespace = tenant.Namespace
-	sa.SetLabels(addToMap(tenant.GetLabels()))
-	sa.SetAnnotations(addToMap(tenant.GetAnnotations()))
+	if sa.GetLabels() == nil {
+		sa.SetLabels(make(map[string]string))
+	}
+	sa.SetLabels(addToMap(sa.GetLabels(), tenant.GetLabels()))
+	if sa.GetAnnotations() == nil {
+		sa.SetAnnotations(make(map[string]string))
+	}
+	sa.SetAnnotations(addToMap(sa.GetAnnotations(), tenant.GetAnnotations()))
 	sa.Annotations["iam.gke.io/gcp-service-account"] = tenant.Spec.GCP.ServiceAccount
 	foundSa := &v1.ServiceAccount{}
 	if err := controllerutil.SetControllerReference(tenant, sa, r.Scheme); err != nil {
@@ -130,8 +136,14 @@ func (r *TenantCloudReconciler) SetupGcp(ctx context.Context, req ctrl.Request, 
 	role := &rbacv1.Role{}
 	role.Name = tenant.Name
 	role.Namespace = tenant.Namespace
-	role.SetLabels(addToMap(tenant.GetLabels()))
-	role.SetAnnotations(addToMap(tenant.GetAnnotations()))
+	if role.GetLabels() == nil {
+		role.SetLabels(make(map[string]string))
+	}
+	role.SetLabels(addToMap(role.GetLabels(), tenant.GetLabels()))
+	if role.GetAnnotations() == nil {
+		role.SetAnnotations(make(map[string]string))
+	}
+	role.SetAnnotations(addToMap(role.GetAnnotations(), tenant.GetAnnotations()))
 	role.Rules = []rbacv1.PolicyRule{
 		{
 			APIGroups: []string{""},
@@ -161,8 +173,14 @@ func (r *TenantCloudReconciler) SetupGcp(ctx context.Context, req ctrl.Request, 
 	rb := &rbacv1.RoleBinding{}
 	rb.Name = fmt.Sprintf("%s-rb", tenant.Name)
 	rb.Namespace = tenant.Namespace
-	rb.SetLabels(addToMap(tenant.GetLabels()))
-	rb.SetAnnotations(addToMap(tenant.GetAnnotations()))
+	if rb.GetLabels() == nil {
+		rb.SetLabels(make(map[string]string))
+	}
+	rb.SetLabels(addToMap(rb.GetLabels(), tenant.GetLabels()))
+	if rb.GetAnnotations() == nil {
+		rb.SetAnnotations(make(map[string]string))
+	}
+	rb.SetAnnotations(addToMap(rb.GetAnnotations(), tenant.GetAnnotations()))
 	rb.RoleRef = rbacv1.RoleRef{
 		APIGroup: "rbac.authorization.k8s.io",
 		Kind:     "Role",
@@ -199,8 +217,14 @@ func (r *TenantCloudReconciler) SetupGcp(ctx context.Context, req ctrl.Request, 
 	cronjob := &batchv1.CronJob{}
 	cronjob.Name = tenant.Name
 	cronjob.Namespace = tenant.Namespace
-	cronjob.SetLabels(addToMap(tenant.GetLabels()))
-	cronjob.SetAnnotations(addToMap(tenant.GetAnnotations()))
+	if cronjob.GetLabels() == nil {
+		cronjob.SetLabels(make(map[string]string))
+	}
+	cronjob.SetLabels(addToMap(cronjob.GetLabels(), tenant.GetLabels()))
+	if cronjob.GetAnnotations() == nil {
+		cronjob.SetAnnotations(make(map[string]string))
+	}
+	cronjob.SetAnnotations(addToMap(cronjob.GetAnnotations(), tenant.GetAnnotations()))
 	cronjob.Spec.Schedule = "*/45 * * * *"
 	cronjob.Spec.FailedJobsHistoryLimit = int32Ptr(1)
 	cronjob.Spec.SuccessfulJobsHistoryLimit = int32Ptr(1)
@@ -268,24 +292,4 @@ func (r *TenantCloudReconciler) SetupGcp(ctx context.Context, req ctrl.Request, 
 	}
 	tenant.Status.Secret = fmt.Sprintf("%s/%s", tenant.Namespace, secretName)
 	return nil
-}
-
-func addToMap(tenant map[string]string) map[string]string {
-	obj := make(map[string]string)
-	for k, v := range tenant {
-		obj[k] = v
-	}
-	return obj
-}
-
-func int32Ptr(i int32) *int32 {
-	return &i
-}
-
-func int64Ptr(i int64) *int64 {
-	return &i
-}
-
-func booPtr(b bool) *bool {
-	return &b
 }

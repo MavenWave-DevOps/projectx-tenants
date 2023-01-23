@@ -8,6 +8,24 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - namespaces
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - namespaces/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - ""
+  resources:
   - secrets
   verbs:
   - create
@@ -71,6 +89,32 @@ rules:
   - projectx.mavenwave.dev
   resources:
   - tenantclouds/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - projectx.mavenwave.dev
+  resources:
+  - tenants
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - projectx.mavenwave.dev
+  resources:
+  - tenants/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - projectx.mavenwave.dev
+  resources:
+  - tenants/status
   verbs:
   - get
   - patch
