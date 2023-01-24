@@ -24,12 +24,12 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// TenantRBACSpec defines the desired state of TenantRBAC
-type TenantRBACSpec struct {
+// TenantAccessSpec defines the desired state of TenantRBAC
+type TenantAccessSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of TenantRBAC. Edit tenantrbac_types.go to remove/update
+	// Iam is a list of IAM permissions
 	Iam []IamSpec `json:"iam,omitempty"`
 }
 
@@ -39,8 +39,8 @@ type IamSpec struct {
 	Subjects []rbacv1.Subject    `json:"subjects,omitempty"`
 }
 
-// TenantRBACStatus defines the observed state of TenantRBAC
-type TenantRBACStatus struct {
+// TenantAccessStatus defines the observed state of TenantAccess
+type TenantAccessStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 }
@@ -48,24 +48,24 @@ type TenantRBACStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
-// TenantRBAC is the Schema for the tenantrbacs API
-type TenantRBAC struct {
+// TenantAccess is the Schema for the tenantaccess API
+type TenantAccess struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   TenantRBACSpec   `json:"spec,omitempty"`
-	Status TenantRBACStatus `json:"status,omitempty"`
+	Spec   TenantAccessSpec   `json:"spec,omitempty"`
+	Status TenantAccessStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 
-// TenantRBACList contains a list of TenantRBAC
-type TenantRBACList struct {
+// TenantAccessList contains a list of TenantAccess
+type TenantAccessList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []TenantRBAC `json:"items"`
+	Items           []TenantAccess `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&TenantRBAC{}, &TenantRBACList{})
+	SchemeBuilder.Register(&TenantAccess{}, &TenantAccessList{})
 }

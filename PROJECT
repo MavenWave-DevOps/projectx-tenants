@@ -10,7 +10,7 @@ resources:
   controller: true
   domain: mavenwave.dev
   group: projectx
-  kind: TenantRBAC
+  kind: TenantAccess
   path: projectx.mavenwave.dev/api/v1alpha1
   version: v1alpha1
 version: "3"

@@ -14,7 +14,7 @@ rules:
 - apiGroups:
   - projectx.mavenwave.dev
   resources:
-  - tenantrbacs
+  - tenantaccess
   verbs:
   - create
   - delete
@@ -26,13 +26,13 @@ rules:
 - apiGroups:
   - projectx.mavenwave.dev
   resources:
-  - tenantrbacs/finalizers
+  - tenantaccess/finalizers
   verbs:
   - update
 - apiGroups:
   - projectx.mavenwave.dev
   resources:
-  - tenantrbacs/status
+  - tenantaccess/status
   verbs:
   - get
   - patch

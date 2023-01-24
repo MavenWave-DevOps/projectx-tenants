@@ -1,5 +1,5 @@
 apiVersion: projectx.mavenwave.dev/v1alpha1
-kind: TenantRBAC
+kind: TenantAccess
 metadata:
   labels:
     app.kubernetes.io/name: tenantrbac

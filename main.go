@@ -88,11 +88,11 @@ func main() {
 		setupLog.Error(err, "unable to start manager")
 		os.Exit(1)
 	}
-	if err = (&controllers.TenantRBACReconciler{
+	if err = (&controllers.TenantAccessReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "TenantRBAC")
+		setupLog.Error(err, "unable to create controller", "controller", "TenantAccess")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder

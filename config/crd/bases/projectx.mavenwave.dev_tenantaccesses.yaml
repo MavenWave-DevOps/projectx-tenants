@@ -5,20 +5,20 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.10.0
   creationTimestamp: null
-  name: tenantrbacs.projectx.mavenwave.dev
+  name: tenantaccesses.projectx.mavenwave.dev
 spec:
   group: projectx.mavenwave.dev
   names:
-    kind: TenantRBAC
-    listKind: TenantRBACList
-    plural: tenantrbacs
-    singular: tenantrbac
+    kind: TenantAccess
+    listKind: TenantAccessList
+    plural: tenantaccesses
+    singular: tenantaccess
   scope: Namespaced
   versions:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: TenantRBAC is the Schema for the tenantrbacs API
+        description: TenantAccess is the Schema for the tenantaccess API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -33,11 +33,10 @@ spec:
           metadata:
             type: object
           spec:
-            description: TenantRBACSpec defines the desired state of TenantRBAC
+            description: TenantAccessSpec defines the desired state of TenantRBAC
             properties:
               iam:
-                description: Foo is an example field of TenantRBAC. Edit tenantrbac_types.go
-                  to remove/update
+                description: Iam is a list of IAM permissions
                 items:
                   properties:
                     name:
@@ -135,7 +134,7 @@ spec:
                 type: array
             type: object
           status:
-            description: TenantRBACStatus defines the observed state of TenantRBAC
+            description: TenantAccessStatus defines the observed state of TenantAccess
             type: object
         type: object
     served: true
