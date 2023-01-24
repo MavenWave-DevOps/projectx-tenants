@@ -128,7 +128,7 @@ deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in
 	$(KUSTOMIZE) build config/default | kubectl apply -f -
 
 .PHONY: kind_deploy
-kind_deploy: docker-build
+kind_deploy: docker-build ## Deploy into Kind cluster
 	kind load docker-image ${IMG} --name ${CLUSTER}
 	$(MAKE) deploy
 
