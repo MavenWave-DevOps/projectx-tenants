@@ -47,6 +47,7 @@ type TenantAccessStatus struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:resource:path=tenantaccesses
 
 // TenantAccess is the Schema for the tenantaccess API
 type TenantAccess struct {
