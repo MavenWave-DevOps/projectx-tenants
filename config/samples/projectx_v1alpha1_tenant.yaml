@@ -1,0 +1,29 @@
+apiVersion: projectx.mavenwave.dev/v1alpha1
+kind: Tenant
+metadata:
+  labels:
+    app.kubernetes.io/name: tenant
+    app.kubernetes.io/instance: tenant-sample
+    app.kubernetes.io/part-of: projectx-tenants
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: projectx-tenants
+  name: tenant-sample
+spec:
+  namespace:
+    annotations:
+      my-annotation: this
+    labels:
+      my-label: that
+  admins:
+  - kind: User
+    name: foo
+    apiGroup: rbac.authorization.k8s.io
+  - kind: ServiceAccount
+    name: biz
+  viewers:
+  - kind: User
+    name: bar
+    apiGroup: rbac.authorization.k8s.io
+  - kind: ServiceAccount
+    name: baz
+    namespace: default
