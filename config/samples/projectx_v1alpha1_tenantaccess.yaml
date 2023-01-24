@@ -2,12 +2,12 @@ apiVersion: projectx.mavenwave.dev/v1alpha1
 kind: TenantAccess
 metadata:
   labels:
-    app.kubernetes.io/name: tenantrbac
-    app.kubernetes.io/instance: tenantrbac-sample
+    app.kubernetes.io/name: tenantaccess
+    app.kubernetes.io/instance: tenantaccess-sample
     app.kubernetes.io/part-of: projectx-tenants
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: projectx-tenants
-  name: tenantrbac-sample
+  name: tenantaccess-sample
   namespace: default
 spec:
   iam:
