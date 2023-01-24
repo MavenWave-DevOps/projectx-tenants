@@ -96,6 +96,32 @@ rules:
 - apiGroups:
   - projectx.mavenwave.dev
   resources:
+  - tenantrbacs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - projectx.mavenwave.dev
+  resources:
+  - tenantrbacs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - projectx.mavenwave.dev
+  resources:
+  - tenantrbacs/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - projectx.mavenwave.dev
+  resources:
   - tenants
   verbs:
   - create

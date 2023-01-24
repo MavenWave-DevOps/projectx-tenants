@@ -15,11 +15,19 @@ resources:
   version: v1alpha1
 - api:
     crdVersion: v1
-    namespaced: false
   controller: true
   domain: mavenwave.dev
   group: projectx
   kind: Tenant
+  path: projectx.mavenwave.dev/api/v1alpha1
+  version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: mavenwave.dev
+  group: projectx
+  kind: TenantRBAC
   path: projectx.mavenwave.dev/api/v1alpha1
   version: v1alpha1
 version: "3"

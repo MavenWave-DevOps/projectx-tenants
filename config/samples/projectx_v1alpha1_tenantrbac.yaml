@@ -1,0 +1,45 @@
+apiVersion: projectx.mavenwave.dev/v1alpha1
+kind: TenantRBAC
+metadata:
+  labels:
+    app.kubernetes.io/name: tenantrbac
+    app.kubernetes.io/instance: tenantrbac-sample
+    app.kubernetes.io/part-of: projectx-tenants
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: projectx-tenants
+  name: tenantrbac-sample
+  namespace: default
+spec:
+  iam:
+  - name: admins
+    rules:
+    - apiGroups:
+      - "*"
+      resources:
+      - "*"
+      verbs:
+      - "*"
+    subjects:
+    - kind: User
+      name: foo
+      apiGroup: rbac.authorization.k8s.io
+    - kind: ServiceAccount
+      name: biz
+  - name: viewers
+    rules:
+    - apiGroups:
+      - "*"
+      resources:
+      - "*"
+      verbs:
+      - "list"
+      - "get"
+      - "watch"
+    subjects:
+    - kind: User
+      name: bar
+      apiGroup: rbac.authorization.k8s.io
+    - kind: ServiceAccount
+      name: baz
+      namespace: default
+      

@@ -1,0 +1,27 @@
+# permissions for end users to view tenantrbacs.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: tenantrbac-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: projectx-tenants
+    app.kubernetes.io/part-of: projectx-tenants
+    app.kubernetes.io/managed-by: kustomize
+  name: tenantrbac-viewer-role
+rules:
+- apiGroups:
+  - projectx.mavenwave.dev
+  resources:
+  - tenantrbacs
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - projectx.mavenwave.dev
+  resources:
+  - tenantrbacs/status
+  verbs:
+  - get
